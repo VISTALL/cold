@@ -1,4 +1,4 @@
-package consulo.cold.execute.target;
+package consulo.cold.runner.execute.target;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,9 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.CharsetToolkit;
-import consulo.cold.execute.ExecuteFailedException;
-import consulo.cold.execute.ExecuteIndicator;
-import consulo.cold.execute.ExecuteTarget;
+import consulo.cold.runner.execute.ExecuteFailedException;
+import consulo.cold.runner.execute.ExecuteLogger;
+import consulo.cold.runner.execute.ExecuteTarget;
 
 /**
  * @author VISTALL
@@ -18,7 +18,7 @@ import consulo.cold.execute.ExecuteTarget;
 public class PrepareEnvironmentTarget implements ExecuteTarget
 {
 	@Override
-	public void execute(@NotNull ExecuteIndicator executeIndicator, @NotNull UserDataHolder executeContext) throws ExecuteFailedException
+	public void execute(@NotNull ExecuteLogger executeLogger, @NotNull UserDataHolder executeContext) throws ExecuteFailedException
 	{
 		File consuloDir = new File(".", ".consulo");
 		if(!consuloDir.exists())

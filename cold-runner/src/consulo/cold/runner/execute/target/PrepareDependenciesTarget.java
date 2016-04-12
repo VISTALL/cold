@@ -1,4 +1,4 @@
-package consulo.cold.execute.target;
+package consulo.cold.runner.execute.target;
 
 import java.io.File;
 import java.io.InputStream;
@@ -22,10 +22,10 @@ import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.containers.MultiMap;
 import com.intellij.util.io.ZipUtil;
-import consulo.cold.execute.ExecuteFailedException;
-import consulo.cold.execute.ExecuteIndicator;
-import consulo.cold.execute.ExecuteTarget;
-import consulo.cold.util.DownloadUtil;
+import consulo.cold.runner.execute.ExecuteFailedException;
+import consulo.cold.runner.execute.ExecuteLogger;
+import consulo.cold.runner.execute.ExecuteTarget;
+import consulo.cold.runner.util.DownloadUtil;
 
 /**
  * @author VISTALL
@@ -36,9 +36,9 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 	private static final String ourDefaultPluginHost = "http://must-be.org/consulo/plugins/%s";
 
 	@Override
-	public void execute(@NotNull ExecuteIndicator executeIndicator, @NotNull UserDataHolder executeContext) throws ExecuteFailedException
+	public void execute(@NotNull ExecuteLogger executeLogger, @NotNull UserDataHolder executeContext) throws ExecuteFailedException
 	{
-		executeIndicator.setText("Preparing dependencies");
+		executeLogger.info("Preparing dependencies");
 
 		File depDir = new File(executeContext.getUserData(WORKING_DIRECTORY), "dep");
 
@@ -87,7 +87,7 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 				{
 					return;
 				}
-				executeIndicator.setText("Downloading plugin list...");
+				executeLogger.info("Downloading plugin list...");
 				connection = new URL(String.format(ourDefaultPluginHost, "list")).openConnection();
 				connection.connect();
 
@@ -121,16 +121,16 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 					File targetFileToDownload = FileUtil.createTempFile("download_target", ".zip");
 					File tempTargetFileToDownload = FileUtil.createTempFile("temp_download_target", ".zip");
 
-					executeIndicator.setText("Downloading plugin: " + toDownloadId);
-					DownloadUtil.downloadAtomically(executeIndicator, url, targetFileToDownload, tempTargetFileToDownload);
+					executeLogger.info("Downloading plugin: " + toDownloadId);
+					DownloadUtil.downloadAtomically(executeLogger, url, targetFileToDownload, tempTargetFileToDownload);
 
-					executeIndicator.setText("Extracting plugin: " + toDownloadId);
+					executeLogger.info("Extracting plugin: " + toDownloadId);
 					ZipUtil.extract(targetFileToDownload, depDir, null);
 				}
 			}
 			catch(JDOMException e)
 			{
-				executeIndicator.warn(e);
+				executeLogger.warn(e);
 			}
 			finally
 			{

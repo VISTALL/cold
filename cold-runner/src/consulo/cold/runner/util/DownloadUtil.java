@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package consulo.cold.util;
+package consulo.cold.runner.util;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,7 +30,7 @@ import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.util.containers.Predicate;
-import consulo.cold.execute.ExecuteIndicator;
+import consulo.cold.runner.execute.ExecuteLogger;
 
 /**
  * @author Sergey Simonchik
@@ -58,7 +58,7 @@ public class DownloadUtil
 	 * @throws IOException if an I/O error occurs
 	 * @returns true if no {@code contentChecker} is provided or the provided one returned true
 	 */
-	public static boolean downloadAtomically(@NotNull ExecuteIndicator indicator,
+	public static boolean downloadAtomically(@NotNull ExecuteLogger indicator,
 			@NotNull String url,
 			@NotNull File outputFile,
 			@NotNull File tempFile,
@@ -93,12 +93,12 @@ public class DownloadUtil
 	 * @param outputFile output file
 	 * @param tempFile   temporary file to download to. This file is deleted on method exit.
 	 */
-	public static void downloadAtomically(@NotNull ExecuteIndicator indicator, @NotNull String url, @NotNull File outputFile, @NotNull File tempFile) throws IOException
+	public static void downloadAtomically(@NotNull ExecuteLogger indicator, @NotNull String url, @NotNull File outputFile, @NotNull File tempFile) throws IOException
 	{
 		downloadAtomically(indicator, url, outputFile, tempFile, null);
 	}
 
-	public static void downloadContentToFile(@NotNull ExecuteIndicator progress, @NotNull String url, @NotNull File outputFile) throws IOException
+	public static void downloadContentToFile(@NotNull ExecuteLogger progress, @NotNull String url, @NotNull File outputFile) throws IOException
 	{
 		boolean parentDirExists = FileUtil.createParentDirs(outputFile);
 		if(!parentDirExists)
@@ -116,7 +116,7 @@ public class DownloadUtil
 		}
 	}
 
-	private static void download(@NotNull ExecuteIndicator indicator, @NotNull String location, @NotNull OutputStream output) throws IOException
+	private static void download(@NotNull ExecuteLogger indicator, @NotNull String location, @NotNull OutputStream output) throws IOException
 	{
 		HttpURLConnection urlConnection = (HttpURLConnection) new URL(location).openConnection();
 		try

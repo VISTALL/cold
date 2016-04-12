@@ -1,4 +1,4 @@
-package consulo.cold.util;
+package consulo.cold;
 
 import com.intellij.openapi.diagnostic.DefaultLogger;
 import com.intellij.openapi.diagnostic.Logger;
