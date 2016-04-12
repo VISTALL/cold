@@ -40,8 +40,7 @@ public class Main
 	{
 		Logger.setFactory(ColdLoggerFactory.class);
 
-		//URL url = new URL("http://must-be.org/vulcan/site/_consulo-distribution/out/consulo-win-no-jre.zip");
-		URL url = new File("R:/_github.com/consulo/cold/test/consulo-win-no-jre.zip").toURL();
+		URL url = new URL("http://must-be.org/vulcan/site/_consulo-distribution/out/consulo-win-no-jre.zip");
 
 		File tempDirectory = new File(".", ".cold");
 		FileUtil.createDirectory(tempDirectory);
