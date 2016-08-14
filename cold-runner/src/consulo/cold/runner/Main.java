@@ -1,5 +1,8 @@
 package consulo.cold.runner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.UserDataHolderBase;
 import consulo.cold.runner.execute.ExecuteLogger;
@@ -19,11 +22,10 @@ public class Main
 	{
 		Logger.setFactory(ColdLoggerFactory.class);
 
-		ExecuteTarget[] targets = new ExecuteTarget[]{
-				new PrepareEnvironmentTarget(),
-				new PrepareDependenciesTarget(),
-				new BuildTarget()
-		};
+		List<ExecuteTarget> targets = new ArrayList<ExecuteTarget>();
+		targets.add(new PrepareEnvironmentTarget());
+		targets.add(new PrepareDependenciesTarget());
+		targets.add(new BuildTarget());
 
 		ExecuteLogger executeLogger = new ExecuteLogger();
 

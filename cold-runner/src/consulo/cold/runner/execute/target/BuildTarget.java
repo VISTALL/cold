@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.consulo.compiler.server.application.CompilerServerApplication;
 import org.consulo.compiler.server.rmi.CompilerClientConnector;
@@ -89,9 +91,25 @@ public class BuildTarget implements ExecuteTarget
 
 			app.load(PathManager.getOptionsPath());
 
-			setupSdk("JDK", "1.6", jdk6Home);
-			//setupSdk("JDK", "1.7", jdk7);
-			setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", consuloHome);
+			Set<String> alreadyAdded = new HashSet<String>();
+
+			Set<String> propertyNames = System.getProperties().stringPropertyNames();
+			for(String propertyName : propertyNames)
+			{
+				if(propertyName.startsWith("cold.sdk."))
+				{
+					String value = System.getProperty(propertyName);
+
+					String[] splits = value.split(";");
+
+					setupSdk(splits[0], splits[1], splits[2], alreadyAdded);
+				}
+			}
+
+			setupSdk("JDK", "1.6", jdk6Home, alreadyAdded);
+			setupSdk("JDK", "1.8", jdk6Home, alreadyAdded);
+			setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", consuloHome, alreadyAdded);
+			setupSdk("Consulo Plugin SDK", "Consulo SNAPSHOT", consuloHome, alreadyAdded);
 
 			/*executeIndicator.setText("Cleanup output directories");
 
@@ -197,8 +215,13 @@ public class BuildTarget implements ExecuteTarget
 		}
 	}
 
-	private static void setupSdk(String sdkTypeName, String name, String home)
+	private static void setupSdk(String sdkTypeName, String name, String home, Set<String> alreadyAdded)
 	{
+		if(!alreadyAdded.add(name))
+		{
+			return;
+		}
+
 		SdkType sdkType = null;
 		for(SdkType temp : SdkType.EP_NAME.getExtensions())
 		{
@@ -209,7 +232,11 @@ public class BuildTarget implements ExecuteTarget
 			}
 		}
 
-		assert sdkType != null;
+		if(sdkType == null)
+		{
+			return;
+		}
+
 		SdkImpl sdk = new SdkImpl(name, sdkType, home, SystemProperties.getJavaVersion());
 		sdk.setVersionString(sdkType.getVersionString(sdk));
 

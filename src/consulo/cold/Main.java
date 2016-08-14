@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Set;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
@@ -148,6 +149,16 @@ public class Main
 		for(File file : libDir.listFiles())
 		{
 			javaCommandBuilder.addClassPathEntry(file.getAbsolutePath());
+		}
+
+		// copy all cold properties
+		Set<String> properties = System.getProperties().stringPropertyNames();
+		for(String property : properties)
+		{
+			if(property.startsWith("cold."))
+			{
+				javaCommandBuilder.addSystemProperty(property, System.getProperty(property));
+			}
 		}
 
 		javaCommandBuilder.addSystemProperty("jdk6.home", javaHome);
