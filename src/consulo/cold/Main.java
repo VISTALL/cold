@@ -40,17 +40,19 @@ public class Main
 	{
 		Logger.setFactory(ColdLoggerFactory.class);
 
-		URL url = new URL("http://must-be.org/vulcan/site/_consulo-distribution/out/consulo-win-no-jre.zip");
-
 		File tempDirectory = new File(".", ".cold");
+
+		tempDirectory.delete();
+
 		FileUtil.createDirectory(tempDirectory);
-		tempDirectory.deleteOnExit();
 
 		File consuloBuildFile = FileUtilRt.createTempFile("consulo", "zip", true);
 
 		FileOutputStream fileOutputStream = new FileOutputStream(consuloBuildFile);
 
 		System.out.println("Downloading consulo build");
+
+		URL url = new URL("http://must-be.org/vulcan/site/_consulo-distribution/out/consulo-win-no-jre.zip");
 
 		FileUtilRt.copy(url.openStream(), fileOutputStream);
 
@@ -91,6 +93,8 @@ public class Main
 		}
 
 		int exitValue = start(javaHome, consuloPath.getPath(), tempDirectory.getParentFile().getAbsolutePath());
+
+		tempDirectory.delete();
 
 		System.exit(exitValue);
 	}
