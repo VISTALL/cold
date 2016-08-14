@@ -102,14 +102,14 @@ public class BuildTarget implements ExecuteTarget
 
 					String[] splits = value.split(";");
 
-					setupSdk(splits[0], splits[1], splits[2], alreadyAdded);
+					setupSdk(splits[0], splits[1], splits[2], alreadyAdded, executeLogger);
 				}
 			}
 
-			setupSdk("JDK", "1.6", jdk6Home, alreadyAdded);
-			setupSdk("JDK", "1.8", jdk6Home, alreadyAdded);
-			setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", consuloHome, alreadyAdded);
-			setupSdk("Consulo Plugin SDK", "Consulo SNAPSHOT", consuloHome, alreadyAdded);
+			setupSdk("JDK", "1.6", jdk6Home, alreadyAdded, executeLogger);
+			setupSdk("JDK", "1.8", jdk6Home, alreadyAdded, executeLogger);
+			setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", consuloHome, alreadyAdded, executeLogger);
+			setupSdk("Consulo Plugin SDK", "Consulo SNAPSHOT", consuloHome, alreadyAdded, executeLogger);
 
 			/*executeIndicator.setText("Cleanup output directories");
 
@@ -215,7 +215,7 @@ public class BuildTarget implements ExecuteTarget
 		}
 	}
 
-	private static void setupSdk(String sdkTypeName, String name, String home, Set<String> alreadyAdded)
+	private static void setupSdk(String sdkTypeName, String name, String home, Set<String> alreadyAdded, ExecuteLogger executeLogger)
 	{
 		if(!alreadyAdded.add(name))
 		{
@@ -243,5 +243,7 @@ public class BuildTarget implements ExecuteTarget
 		sdkType.setupSdkPaths(sdk);
 
 		SdkTable.getInstance().addSdk(sdk);
+
+		executeLogger.info("Sdk [name='" + name + "',  type='" + sdkTypeName + "', home='" + home + "'] added");
 	}
 }
