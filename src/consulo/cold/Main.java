@@ -44,6 +44,7 @@ public class Main
 
 		File tempDirectory = new File(".", ".cold");
 		FileUtil.createDirectory(tempDirectory);
+		tempDirectory.deleteOnExit();
 
 		File consuloBuildFile = FileUtilRt.createTempFile("consulo", "zip", true);
 
@@ -89,7 +90,9 @@ public class Main
 			downloadRequiredPlugin(consuloPath, pluginId);
 		}
 
-		start(javaHome, consuloPath.getPath(), tempDirectory.getParentFile().getAbsolutePath());
+		int exitValue = start(javaHome, consuloPath.getPath(), tempDirectory.getParentFile().getAbsolutePath());
+
+		System.exit(exitValue);
 	}
 
 	private static void downloadColdRunner(File consuloPath) throws Exception
@@ -130,7 +133,7 @@ public class Main
 		ZipUtil.extract(tempFile, new File(consuloPath, "plugins"), null);
 	}
 
-	private static void start(String javaHome, String consuloPath, String workingDirectory) throws Exception
+	private static int start(String javaHome, String consuloPath, String workingDirectory) throws Exception
 	{
 		JavaCommandBuilder javaCommandBuilder = new JavaCommandBuilder();
 		javaCommandBuilder.setMainClassName("consulo.cold.runner.Main");
@@ -146,10 +149,10 @@ public class Main
 		javaCommandBuilder.addSystemProperty("jdk6.home", javaHome);
 		javaCommandBuilder.addSystemProperty("consulo.home", consuloPath);
 
-		execute(javaCommandBuilder.construct(), workingDirectory);
+		return execute(javaCommandBuilder.construct(), workingDirectory);
 	}
 
-	private static void execute(String[] args, String workDir) throws Exception
+	private static int execute(String[] args, String workDir) throws Exception
 	{
 		final Process process;
 
@@ -184,11 +187,12 @@ public class Main
 			thread.setDaemon(true);
 			thread.start();
 
-			System.exit(process.waitFor());
+			return process.waitFor();
 		}
 		catch(InterruptedException e)
 		{
 			process.destroy();
 		}
+		return -1;
 	}
 }
