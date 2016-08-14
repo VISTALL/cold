@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="cold-runner">
-    <output-path>$PROJECT_DIR$/out/artifacts/cold_runner</output-path>
-    <root id="jar-archive" name="cold-runner.jar">
-      <element id="module-output" name="cold-runner" />
-    </root>
-  </artifact>
-</component>

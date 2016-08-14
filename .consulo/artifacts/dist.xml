@@ -1,0 +1,19 @@
+<component name="ArtifactManager">
+  <artifact name="dist">
+    <output-path>$PROJECT_DIR$/build</output-path>
+    <root id="root">
+      <element id="zip-archive" name="cold-runner.jar">
+        <element id="module-output" name="cold-runner" />
+      </element>
+      <element id="zip-archive" name="cold.jar">
+        <element id="module-output" name="cold" />
+        <element id="module-production-resource-output" name="cold" />
+        <element id="extracted-dir" path="$PROJECT_DIR$/lib/trove4j.jar" path-in-jar="/" />
+        <element id="extracted-dir" path="$PROJECT_DIR$/lib/log4j.jar" path-in-jar="/" />
+        <element id="extracted-dir" path="$PROJECT_DIR$/lib/util.jar" path-in-jar="/" />
+        <element id="extracted-dir" path="$PROJECT_DIR$/lib/jdom.jar" path-in-jar="/" />
+        <element id="extracted-dir" path="$PROJECT_DIR$/lib/annotations.jar" path-in-jar="/" />
+      </element>
+    </root>
+  </artifact>
+</component>

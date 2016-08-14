@@ -21,16 +21,21 @@ public class PrepareEnvironmentTarget implements ExecuteTarget
 	public void execute(@NotNull ExecuteLogger executeLogger, @NotNull UserDataHolder executeContext) throws ExecuteFailedException
 	{
 		File consuloDir = new File(".", ".consulo");
+		File parentFile = consuloDir.getParentFile();
+
 		if(!consuloDir.exists())
 		{
-			throw new ExecuteFailedException(consuloDir.getParentFile().getAbsolutePath() + " is not Consulo project");
+			throw new ExecuteFailedException(parentFile.getAbsolutePath() + " is not Consulo project");
 		}
+
+		executeLogger.info("Dropping out directory");
+		FileUtil.delete(new File(parentFile, "out"));
 
 		try
 		{
 			String name = FileUtil.loadFile(new File(consuloDir, ".name"), CharsetToolkit.UTF8);
 
-			executeContext.putUserData(WORKING_DIRECTORY, consuloDir.getParentFile());
+			executeContext.putUserData(WORKING_DIRECTORY, parentFile);
 			executeContext.putUserData(PROJECT_NAME, name);
 		}
 		catch(IOException e)

@@ -30,7 +30,6 @@ import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.io.FileUtilRt;
-import com.intellij.openapi.vfs.impl.local.FileWatcher;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.packaging.impl.compiler.ArtifactCompileScope;
@@ -73,7 +72,7 @@ public class BuildTarget implements ExecuteTarget
 			System.setProperty(PathManager.PROPERTY_CONFIG_PATH, tempDataDir.getAbsolutePath() + "/config");
 			System.setProperty(PathManager.PROPERTY_SYSTEM_PATH, tempDataDir.getAbsolutePath() + "/system");
 			System.setProperty(PathManager.PROPERTY_HOME_PATH, consuloHome);
-			System.setProperty(FileWatcher.PROPERTY_WATCHER_DISABLED, "true");
+			System.setProperty("idea.filewatcher.disabled", "true");
 			//System.setProperty("vulcan.build.number", buildNumber);
 			//System.setProperty("vulcan.consulo.build.number", consuloBuildNumber);
 
