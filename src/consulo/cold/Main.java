@@ -34,7 +34,9 @@ public class Main
 			"com.intellij.regexp",
 			"com.intellij.spellchecker",
 			"com.intellij.uiDesigner",
-			"com.intellij.xml"
+			"com.intellij.xml",
+			// internal plugin
+			"consulo.internal.jenkins.helper"
 	};
 
 	public static void main(String[] args) throws Exception
