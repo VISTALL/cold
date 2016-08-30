@@ -137,7 +137,7 @@ public class Main
 
 		FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
 
-		System.out.println("Downloading required plugin: " + pluginId);
+		System.out.println("Downloading required plugin: " + pluginId + ", url: " + url);
 
 		FileUtilRt.copy(url.openStream(), fileOutputStream);
 
