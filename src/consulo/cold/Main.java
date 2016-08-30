@@ -124,7 +124,7 @@ public class Main
 		URL url = null;
 		if(pluginId.equals("com.intellij.uiDesigner"))
 		{
-			url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/ui-designer_hacked.zip");
+			url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/ui-designer-patched.zip");
 		}
 		else
 		{
