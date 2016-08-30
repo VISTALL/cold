@@ -121,9 +121,17 @@ public class Main
 
 	private static void downloadRequiredPlugin(File consuloPath, String pluginId) throws Exception
 	{
-		String urlString = String.format(ourDefaultPluginHost, "download?id=") + URLEncoder.encode(pluginId, "UTF8") + "&build=SNAPSHOT&uuid=" + URLEncoder.encode("cold", "UTF8");
+		URL url = null;
+		if(pluginId.equals("com.intellij.uiDesigner"))
+		{
+			url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/ui-designer_hacked.jar");
+		}
+		else
+		{
+			String urlString = String.format(ourDefaultPluginHost, "download?id=") + URLEncoder.encode(pluginId, "UTF8") + "&build=SNAPSHOT&uuid=" + URLEncoder.encode("cold", "UTF8");
 
-		URL url = new URL(urlString);
+			url = new URL(urlString);
+		}
 
 		File tempFile = FileUtilRt.createTempFile(pluginId, "zip", true);
 
