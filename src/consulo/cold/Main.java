@@ -126,6 +126,10 @@ public class Main
 		{
 			url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/ui-designer-patched.zip");
 		}
+		else if(pluginId.equals("org.consulo.java"))
+		{
+			url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/java-patched.zip");
+		}
 		else
 		{
 			String urlString = String.format(ourDefaultPluginHost, "download?id=") + URLEncoder.encode(pluginId, "UTF8") + "&build=SNAPSHOT&uuid=" + URLEncoder.encode("cold", "UTF8");
