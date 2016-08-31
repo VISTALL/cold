@@ -133,6 +133,9 @@ public class Main
 			case "com.intellij.xml":
 				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/xml-patched.zip");
 				break;
+			case "com.intellij.properties":
+				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/properties-patched.zip");
+				break;
 			default:
 				String urlString = String.format(ourDefaultPluginHost, "download?id=") + URLEncoder.encode(pluginId, "UTF8") + "&build=SNAPSHOT&uuid=" + URLEncoder.encode("cold", "UTF8");
 				url = new URL(urlString);
