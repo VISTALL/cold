@@ -55,7 +55,7 @@ public class Main
 
 		System.out.println("Downloading consulo build");
 
-		URL url = new URL("http://must-be.org/vulcan/site/_consulo-distribution/out/consulo-win-no-jre.zip");
+		URL url = new URL("http://must-be.org/jenkins/job/consulo/lastSuccessfulBuild/artifact/out/artifacts/dist/consulo-win.zip");
 
 		FileUtilRt.copy(url.openStream(), fileOutputStream);
 
@@ -104,7 +104,7 @@ public class Main
 
 	private static void downloadColdRunner(File consuloPath) throws Exception
 	{
-		URL coldJar = new URL("https://github.com/consulo/cold/raw/master/build/cold-runner.jar");
+		URL coldJar = new URL("http://must-be.org/jenkins/job/cold/lastSuccessfulBuild/artifact/build/cold-runner.jar");
 
 		File coldJarFile = new File(consuloPath, "lib/cold-runner.jar");
 
