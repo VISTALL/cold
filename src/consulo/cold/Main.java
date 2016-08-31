@@ -122,19 +122,18 @@ public class Main
 	private static void downloadRequiredPlugin(File consuloPath, String pluginId) throws Exception
 	{
 		URL url = null;
-		if(pluginId.equals("com.intellij.uiDesigner"))
+		switch(pluginId)
 		{
-			url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/ui-designer-patched.zip");
-		}
-		else if(pluginId.equals("org.consulo.java"))
-		{
-			url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/java-patched.zip");
-		}
-		else
-		{
-			String urlString = String.format(ourDefaultPluginHost, "download?id=") + URLEncoder.encode(pluginId, "UTF8") + "&build=SNAPSHOT&uuid=" + URLEncoder.encode("cold", "UTF8");
-
-			url = new URL(urlString);
+			case "com.intellij.uiDesigner":
+				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/ui-designer-patched.zip");
+				break;
+			case "org.consulo.java":
+				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/java-patched.zip");
+				break;
+			default:
+				String urlString = String.format(ourDefaultPluginHost, "download?id=") + URLEncoder.encode(pluginId, "UTF8") + "&build=SNAPSHOT&uuid=" + URLEncoder.encode("cold", "UTF8");
+				url = new URL(urlString);
+				break;
 		}
 
 		File tempFile = FileUtilRt.createTempFile(pluginId, "zip", true);
