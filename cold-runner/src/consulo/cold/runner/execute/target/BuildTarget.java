@@ -7,9 +7,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.consulo.compiler.server.application.CompilerServerApplication;
-import org.consulo.compiler.server.rmi.CompilerClientConnector;
-import org.consulo.compiler.server.rmi.CompilerClientInterface;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.application.PathManager;
@@ -44,6 +41,9 @@ import com.intellij.util.concurrency.Semaphore;
 import consulo.cold.runner.execute.ExecuteFailedException;
 import consulo.cold.runner.execute.ExecuteLogger;
 import consulo.cold.runner.execute.ExecuteTarget;
+import consulo.compiler.server.application.CompilerServerApplication;
+import consulo.compiler.server.rmi.CompilerClientConnector;
+import consulo.compiler.server.rmi.CompilerClientInterface;
 
 /**
  * @author VISTALL

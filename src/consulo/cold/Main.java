@@ -104,7 +104,7 @@ public class Main
 
 	private static void downloadColdRunner(File consuloPath) throws Exception
 	{
-		URL coldJar = new URL("http://must-be.org/jenkins/job/cold/lastSuccessfulBuild/artifact/build/cold-runner.jar");
+		URL coldJar = new URL("https://github.com/consulo/cold/raw/master/build/cold-runner.jar");
 
 		File coldJarFile = new File(consuloPath, "lib/cold-runner.jar");
 
