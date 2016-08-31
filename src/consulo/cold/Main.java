@@ -154,7 +154,6 @@ public class Main
 		javaCommandBuilder.setMainClassName("consulo.cold.runner.Main");
 		javaCommandBuilder.setJavaHome(javaHome);
 
-		javaCommandBuilder.addClassPathEntry(javaHome + "/lib/tools.jar");
 		File libDir = new File(consuloPath, "lib");
 		for(File file : libDir.listFiles())
 		{
