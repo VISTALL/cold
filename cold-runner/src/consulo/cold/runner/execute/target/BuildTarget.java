@@ -133,8 +133,8 @@ public class BuildTarget implements ExecuteTarget
 			setupSdk("JDK", "1.6", jdk6Home, alreadyAdded, executeLogger);
 			setupSdk("JDK", "1.8", jdk6Home, alreadyAdded, executeLogger);
 
-			setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", new File(targetConsuloSdk, "Consulo").getPath(), new HashSet<>(), executeLogger);
-			setupSdk("Consulo Plugin SDK", "Consulo SNAPSHOT", new File(targetConsuloSdk, "Consulo").getPath(), new HashSet<>() , executeLogger);
+			setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", consuloHome, new HashSet<>(), executeLogger);
+			setupSdk("Consulo Plugin SDK", "Consulo SNAPSHOT", new File(targetConsuloSdk, "Consulo").getPath(), new HashSet<>(), executeLogger);
 
 			/*executeIndicator.setText("Cleanup output directories");
 
