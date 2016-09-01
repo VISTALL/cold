@@ -142,6 +142,9 @@ public class Main
 			case "org.consulo.devkit":
 				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/devkit-patched.zip");
 				break;
+			case "consulo.internal.jenkins.helper":
+				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/internal-vulcan-helper-patched.zip");
+				break;
 			default:
 				String urlString = String.format(ourDefaultPluginHost, "download?id=") + URLEncoder.encode(pluginId, "UTF8") + "&build=SNAPSHOT&uuid=" + URLEncoder.encode("cold", "UTF8");
 				url = new URL(urlString);
