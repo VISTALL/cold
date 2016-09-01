@@ -1,7 +1,9 @@
 package consulo.cold.runner.execute.target;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -20,6 +22,7 @@ import com.intellij.openapi.compiler.CompilerMessageCategory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ex.ProjectManagerEx;
 import com.intellij.openapi.project.impl.ProjectManagerImpl;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTable;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.projectRoots.impl.SdkImpl;
@@ -29,6 +32,7 @@ import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.UserDataHolder;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
@@ -38,6 +42,7 @@ import com.intellij.psi.impl.PsiManagerEx;
 import com.intellij.psi.impl.file.impl.FileManagerImpl;
 import com.intellij.util.SystemProperties;
 import com.intellij.util.concurrency.Semaphore;
+import com.intellij.util.io.ZipUtil;
 import consulo.cold.runner.execute.ExecuteFailedException;
 import consulo.cold.runner.execute.ExecuteLogger;
 import consulo.cold.runner.execute.ExecuteTarget;
@@ -69,7 +74,7 @@ public class BuildTarget implements ExecuteTarget
 		{
 			final File projectDir = executeContext.getUserData(WORKING_DIRECTORY);
 
-			final File tempDataDir = new File(new File(executeContext.getUserData(WORKING_DIRECTORY), ".cold"), "ConsuloData");
+			final File tempDataDir = new File(new File(projectDir, ".cold"), "ConsuloData");
 			FileUtilRt.createDirectory(tempDataDir);
 
 			System.setProperty(PathManager.PROPERTY_CONFIG_PATH, tempDataDir.getAbsolutePath() + "/config");
@@ -107,10 +112,29 @@ public class BuildTarget implements ExecuteTarget
 				}
 			}
 
+			File targetConsuloSdk = new File(new File(projectDir, ".cold"), "targetConsuloSdk");
+			FileUtilRt.createDirectory(targetConsuloSdk);
+
+			executeLogger.info("Downloading target platform");
+
+			URL url = new URL("http://must-be.org/jenkins/job/consulo/lastSuccessfulBuild/artifact/out/artifacts/dist/consulo-win.zip");
+
+			File targetPlatformZip = new File(targetConsuloSdk, "target.zip");
+
+			try (FileOutputStream fileOutputStream = new FileOutputStream(targetPlatformZip))
+			{
+				FileUtil.copy(url.openStream(), fileOutputStream);
+			}
+
+			executeLogger.info("Extracting target platform");
+
+			ZipUtil.extract(targetPlatformZip, targetConsuloSdk, null);
+
 			setupSdk("JDK", "1.6", jdk6Home, alreadyAdded, executeLogger);
 			setupSdk("JDK", "1.8", jdk6Home, alreadyAdded, executeLogger);
-			setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", consuloHome, alreadyAdded, executeLogger);
-			setupSdk("Consulo Plugin SDK", "Consulo SNAPSHOT", consuloHome, alreadyAdded, executeLogger);
+
+			setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", new File(targetConsuloSdk, "Consulo").getPath(), new HashSet<>(), executeLogger);
+			setupSdk("Consulo Plugin SDK", "Consulo SNAPSHOT", new File(targetConsuloSdk, "Consulo").getPath(), new HashSet<>() , executeLogger);
 
 			/*executeIndicator.setText("Cleanup output directories");
 
@@ -238,12 +262,20 @@ public class BuildTarget implements ExecuteTarget
 			return;
 		}
 
+		SdkTable sdkTable = SdkTable.getInstance();
+
+		Sdk oldSdk = sdkTable.findSdk(name);
+		if(oldSdk != null)
+		{
+			sdkTable.removeSdk(oldSdk);
+		}
+
 		SdkImpl sdk = new SdkImpl(name, sdkType, home, SystemProperties.getJavaVersion());
 		sdk.setVersionString(sdkType.getVersionString(sdk));
 
 		sdkType.setupSdkPaths(sdk);
 
-		SdkTable.getInstance().addSdk(sdk);
+		sdkTable.addSdk(sdk);
 
 		executeLogger.info("Sdk [name='" + name + "',  type='" + sdkTypeName + "', home='" + home + "'] added");
 	}

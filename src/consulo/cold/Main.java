@@ -55,7 +55,7 @@ public class Main
 
 		System.out.println("Downloading consulo build");
 
-		URL url = new URL("http://must-be.org/jenkins/job/consulo/lastSuccessfulBuild/artifact/out/artifacts/dist/consulo-win.zip");
+		URL url = new URL("http://must-be.org/vulcan/site/_consulo-distribution/out/consulo-win-no-jre.zip");
 
 		FileUtilRt.copy(url.openStream(), fileOutputStream);
 
@@ -121,35 +121,8 @@ public class Main
 
 	private static void downloadRequiredPlugin(File consuloPath, String pluginId) throws Exception
 	{
-		URL url = null;
-		switch(pluginId)
-		{
-			case "com.intellij.uiDesigner":
-				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/ui-designer-patched.zip");
-				break;
-			case "org.consulo.java":
-				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/java-patched.zip");
-				break;
-			case "org.intellij.groovy":
-				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/groovy-patched.zip");
-				break;
-			case "com.intellij.xml":
-				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/xml-patched.zip");
-				break;
-			case "com.intellij.properties":
-				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/properties-patched.zip");
-				break;
-			case "org.consulo.devkit":
-				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/devkit-patched.zip");
-				break;
-			case "consulo.internal.jenkins.helper":
-				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/internal-vulcan-helper-patched.zip");
-				break;
-			default:
-				String urlString = String.format(ourDefaultPluginHost, "download?id=") + URLEncoder.encode(pluginId, "UTF8") + "&build=SNAPSHOT&uuid=" + URLEncoder.encode("cold", "UTF8");
-				url = new URL(urlString);
-				break;
-		}
+		String urlString = String.format(ourDefaultPluginHost, "download?id=") + URLEncoder.encode(pluginId, "UTF8") + "&build=SNAPSHOT&uuid=" + URLEncoder.encode("cold", "UTF8");
+		URL url = new URL(urlString);
 
 		File tempFile = FileUtilRt.createTempFile(pluginId, "zip", true);
 
