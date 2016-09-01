@@ -16,7 +16,6 @@ import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.application.ex.ApplicationEx;
-import com.intellij.openapi.application.impl.ApplicationInfoImpl;
 import com.intellij.openapi.compiler.CompileContext;
 import com.intellij.openapi.compiler.CompileScope;
 import com.intellij.openapi.compiler.CompileStatusNotification;
@@ -82,7 +81,6 @@ public class BuildTarget implements ExecuteTarget
 			System.setProperty(PathManager.PROPERTY_HOME_PATH, consuloHome);
 			System.setProperty("idea.filewatcher.disabled", "true");
 			// it already set via parent process System.setProperty("cold.build.number", "1");
-			System.setProperty("cold.consulo.build.number", String.valueOf(ApplicationInfoImpl.getShadowInstance().getBuild().getBuildNumber()));
 
 			ApplicationEx app = CompilerServerApplication.createApplication();
 			Messages.setTestDialog(new TestDialog()
