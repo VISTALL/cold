@@ -130,6 +130,9 @@ public class Main
 			case "org.consulo.java":
 				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/java-patched.zip");
 				break;
+			case "org.intellij.groovy":
+				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/groovy-patched.zip");
+				break;
 			case "com.intellij.xml":
 				url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/xml-patched.zip");
 				break;
