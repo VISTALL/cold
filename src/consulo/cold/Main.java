@@ -9,7 +9,6 @@ import java.net.URLEncoder;
 import java.util.Set;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.io.ZipUtil;
@@ -45,9 +44,9 @@ public class Main
 
 		File tempDirectory = new File(".", ".cold");
 
-		tempDirectory.delete();
+		FileUtilRt.delete(tempDirectory);
 
-		FileUtil.createDirectory(tempDirectory);
+		FileUtilRt.createDirectory(tempDirectory);
 
 		File consuloBuildFile = FileUtilRt.createTempFile("consulo", "zip", true);
 
@@ -97,7 +96,7 @@ public class Main
 
 		int exitValue = start(javaHome, consuloPath.getPath(), tempDirectory.getParentFile().getAbsolutePath());
 
-		tempDirectory.delete();
+		FileUtilRt.delete(tempDirectory);
 
 		System.exit(exitValue);
 	}
