@@ -1,26 +1,27 @@
 package consulo.cold.runner.execute.target;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.Collection;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
-import com.intellij.openapi.util.Comparing;
-import com.intellij.openapi.util.JDOMUtil;
+import com.google.gson.Gson;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.SdkTable;
+import com.intellij.openapi.roots.impl.libraries.ProjectLibraryTable;
+import com.intellij.openapi.roots.libraries.Library;
+import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.FileUtilRt;
-import com.intellij.openapi.util.io.StreamUtil;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.containers.MultiMap;
 import com.intellij.util.io.ZipUtil;
 import consulo.cold.runner.execute.ExecuteFailedException;
 import consulo.cold.runner.execute.ExecuteLogger;
@@ -33,14 +34,19 @@ import consulo.cold.runner.util.DownloadUtil;
  */
 public class PrepareDependenciesTarget implements ExecuteTarget
 {
-	private static final String ourDefaultPluginHost = "http://must-be.org/consulo/plugins/%s";
+	protected static final PrepareDependenciesTarget ourInstance = new PrepareDependenciesTarget();
+
+	private static final String ourLibraryPrefix = "consulo-plugin: ";
+	private static final String ourDefaultPluginHost = "hhttp://must-be.org/api/v2/consulo/plugins/";
 
 	@Override
 	public void execute(@NotNull ExecuteLogger executeLogger, @NotNull UserDataHolder executeContext) throws ExecuteFailedException
 	{
 		executeLogger.info("Preparing dependencies");
 
-		File depDir = new File(executeContext.getUserData(WORKING_DIRECTORY), "dep");
+		File workDir = executeContext.getUserData(WORKING_DIRECTORY);
+
+		File depDir = new File(workDir, "dep");
 
 		if(!FileUtilRt.delete(depDir))
 		{
@@ -51,90 +57,75 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 		{
 			throw new ExecuteFailedException("Can't create directory: " + depDir.getPath());
 		}
+
+		String consuloVersion = null;
+		Sdk sdk = SdkTable.getInstance().findSdk("Consulo SNAPSHOT");
+		if(sdk != null)
+		{
+			consuloVersion = sdk.getVersionString();
+		}
+
+		if(consuloVersion == null)
+		{
+			throw new ExecuteFailedException("Failed to determinate version of Consulo SDK");
+		}
+
+		Project project = executeContext.getUserData(PROJECT);
+
+		Set<String> originalDeps = new HashSet<>();
+
+		LibraryTable libraryTable = ProjectLibraryTable.getInstance(project);
+		for(Library library : libraryTable.getLibraries())
+		{
+			String name = library.getName();
+			if(name != null && name.startsWith(ourLibraryPrefix))
+			{
+				String pluginId = name.substring(ourLibraryPrefix.length(), name.length());
+
+				originalDeps.add(pluginId);
+			}
+		}
+
+		executeLogger.info("Downloading plugin list...");
+		PluginJson[] plugins;
 		try
 		{
-			URLConnection connection = new URL("http://must-be.org/vulcan/projects.jsp").openConnection();
-			connection.connect();
+			InputStream inputStream = new URL(ourDefaultPluginHost + "list?channel=nightly&platformVersion=" + consuloVersion).openStream();
 
-			InputStream inputStream = null;
-			try
+			plugins = new Gson().fromJson(new InputStreamReader(inputStream, StandardCharsets.UTF_8), PluginJson[].class);
+		}
+		catch(IOException e)
+		{
+			throw new ExecuteFailedException(e);
+		}
+		executeLogger.info("Downloaded plugin list [" + plugins.length + "]");
+
+		Set<String> deepDependencies = new TreeSet<>();
+
+		executeLogger.info("Collected original dependencies: " + originalDeps);
+
+		for(String pluginId : originalDeps)
+		{
+			collectDependencies(pluginId, deepDependencies, plugins);
+		}
+
+		executeLogger.info("Collected deep dependencies: " + deepDependencies);
+
+		try
+		{
+			executeLogger.info("Downloading dependencies");
+			for(String deepDependency : deepDependencies)
 			{
-				Document document = JDOMUtil.loadDocument(inputStream = connection.getInputStream());
+				String downloadUrl = ourDefaultPluginHost + "download?channel=nightly&platformVersion=" + consuloVersion + "&pluginId=" + URLEncoder.encode(deepDependency, "UTF-8") + "&id=cold";
 
-				MultiMap<String, String> map = new MultiMap<String, String>();
-				for(Element element : document.getRootElement().getChildren())
-				{
-					String projectName = element.getChildText("name");
-					Element dependencies = element.getChild("dependencies");
-					if(dependencies != null)
-					{
-						for(Element dependencyElement : dependencies.getChildren())
-						{
-							String textTrim = dependencyElement.getTextTrim();
-							if(Comparing.equal(textTrim, "consulo"))
-							{
-								continue;
-							}
-							map.putValue(projectName, textTrim);
-						}
-					}
-				}
+				File targetFileToDownload = FileUtil.createTempFile("download_target", ".zip");
+				File tempTargetFileToDownload = FileUtil.createTempFile("temp_download_target", ".zip");
 
-				inputStream.close();
+				executeLogger.info("Downloading plugin: " + deepDependency);
+				DownloadUtil.downloadAtomically(executeLogger, downloadUrl, targetFileToDownload, tempTargetFileToDownload);
 
-				String projectName = executeContext.getUserData(PROJECT_NAME);
-				if(!map.containsKey(projectName))
-				{
-					return;
-				}
-				executeLogger.info("Downloading plugin list...");
-				connection = new URL(String.format(ourDefaultPluginHost, "list")).openConnection();
-				connection.connect();
-
-				MultiMap<String, String> buildProjectToId = new MultiMap<String, String>();
-				document = JDOMUtil.loadDocument(inputStream = connection.getInputStream());
-
-				for(Element categoryElement : document.getRootElement().getChildren())
-				{
-					for(Element ideaPluginElement : categoryElement.getChildren())
-					{
-						String idText = ideaPluginElement.getChildText("id");
-						String buildProjectIdText = ideaPluginElement.getChildText("build-project");
-						if(StringUtil.isEmpty(idText) || StringUtil.isEmpty(buildProjectIdText))
-						{
-							continue;
-						}
-						buildProjectToId.putValue(buildProjectIdText, idText);
-					}
-				}
-
-				Set<String> toDownloadIds = new HashSet<String>();
-				collectDependencies(projectName, map, toDownloadIds, buildProjectToId);
-
-				String uuid = "cold";
-
-				for(String toDownloadId : toDownloadIds)
-				{
-					String url = String.format(ourDefaultPluginHost, "download?id=") + URLEncoder.encode(toDownloadId, "UTF8") +
-							"&build=SNAPSHOT&uuid=" + URLEncoder.encode(uuid, "UTF8");
-
-					File targetFileToDownload = FileUtil.createTempFile("download_target", ".zip");
-					File tempTargetFileToDownload = FileUtil.createTempFile("temp_download_target", ".zip");
-
-					executeLogger.info("Downloading plugin: " + toDownloadId);
-					DownloadUtil.downloadAtomically(executeLogger, url, targetFileToDownload, tempTargetFileToDownload);
-
-					executeLogger.info("Extracting plugin: " + toDownloadId);
-					ZipUtil.extract(targetFileToDownload, depDir, null);
-				}
-			}
-			catch(JDOMException e)
-			{
-				executeLogger.warn(e);
-			}
-			finally
-			{
-				StreamUtil.closeStream(inputStream);
+				executeLogger.info("Extracting plugin: " + deepDependency);
+				ZipUtil.extract(targetFileToDownload, depDir, null);
 			}
 		}
 		catch(Exception e)
@@ -143,17 +134,22 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 		}
 	}
 
-	private static void collectDependencies(String projectName, MultiMap<String, String> dependenciesInBuild, Collection<String> make, MultiMap<String, String> buildProjectToId)
+	private void collectDependencies(String pluginId, Set<String> deps, PluginJson[] plugins)
 	{
-		Collection<String> dependencies = dependenciesInBuild.get(projectName);
-		for(String dependency : dependencies)
+		if(!deps.add(pluginId))
 		{
-			for(String id : buildProjectToId.get(dependency))
-			{
-				make.add(id);
-			}
+			return;
+		}
 
-			collectDependencies(dependency, dependenciesInBuild, make, buildProjectToId);
+		for(PluginJson plugin : plugins)
+		{
+			if(pluginId.equals(plugin.id))
+			{
+				for(String dependencyId : plugin.dependencies)
+				{
+					collectDependencies(dependencyId, deps, plugins);
+				}
+			}
 		}
 	}
 }

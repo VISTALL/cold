@@ -14,6 +14,7 @@ import org.consulo.compiler.server.rmi.CompilerClientConnector;
 import org.consulo.compiler.server.rmi.CompilerClientInterface;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.openapi.compiler.CompileContext;
@@ -42,7 +43,6 @@ import com.intellij.packaging.impl.compiler.ArtifactCompileScope;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.PsiManagerEx;
 import com.intellij.psi.impl.file.impl.FileManagerImpl;
-import com.intellij.util.SystemProperties;
 import com.intellij.util.concurrency.Semaphore;
 import com.intellij.util.io.ZipUtil;
 import consulo.cold.runner.execute.ExecuteFailedException;
@@ -131,8 +131,8 @@ public class BuildTarget implements ExecuteTarget
 			setupSdk("JDK", "1.6", jdk6Home, alreadyAdded, executeLogger);
 			setupSdk("JDK", "1.8", jdk6Home, alreadyAdded, executeLogger);
 
-			setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", consuloHome, new HashSet<>(), executeLogger);
-			setupSdk("Consulo Plugin SDK", "Consulo SNAPSHOT", new File(targetConsuloSdk, "Consulo").getPath(), new HashSet<>(), executeLogger);
+			setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", consuloHome, null, executeLogger);
+			setupSdk("Consulo Plugin SDK", "Consulo SNAPSHOT", new File(targetConsuloSdk, "Consulo").getPath(), null, executeLogger);
 
 			/*executeIndicator.setText("Cleanup output directories");
 
@@ -151,8 +151,12 @@ public class BuildTarget implements ExecuteTarget
 			Artifact dist = ArtifactManager.getInstance(project).findArtifact("dist");
 			if(dist == null)
 			{
-				throw new ExecuteFailedException("'dist' artifact not found\n");
+				throw new ExecuteFailedException("'dist' artifact not found");
 			}
+
+			executeContext.putUserData(PROJECT, project);
+
+			PrepareDependenciesTarget.ourInstance.execute(executeLogger, executeContext);
 
 			CompilerClientConnector.getInstance(project).setClientConnection(new CompilerClientInterface()
 			{
@@ -224,25 +228,19 @@ public class BuildTarget implements ExecuteTarget
 				throw new ExecuteFailedException("Compilation failed with " + pair.getFirst() + " errors.");
 			}
 		}
-		catch(IOException e)
-		{
-			throw new ExecuteFailedException(e);
-		}
-		catch(JDOMException e)
-		{
-			throw new ExecuteFailedException(e);
-		}
-		catch(InvalidDataException e)
+		catch(IOException | JDOMException | InvalidDataException e)
 		{
 			throw new ExecuteFailedException(e);
 		}
 	}
 
-	private static void setupSdk(String sdkTypeName, String name, String home, Set<String> alreadyAdded, ExecuteLogger executeLogger)
+	@SuppressWarnings("RequiredXAction")
+	@Nullable
+	private static String setupSdk(String sdkTypeName, String name, String home, @Nullable Set<String> alreadyAdded, ExecuteLogger executeLogger)
 	{
-		if(!alreadyAdded.add(name))
+		if(alreadyAdded != null && !alreadyAdded.add(name))
 		{
-			return;
+			return null;
 		}
 
 		SdkType sdkType = null;
@@ -257,7 +255,7 @@ public class BuildTarget implements ExecuteTarget
 
 		if(sdkType == null)
 		{
-			return;
+			return null;
 		}
 
 		SdkTable sdkTable = SdkTable.getInstance();
@@ -268,13 +266,15 @@ public class BuildTarget implements ExecuteTarget
 			sdkTable.removeSdk(oldSdk);
 		}
 
-		SdkImpl sdk = new SdkImpl(name, sdkType, home, SystemProperties.getJavaVersion());
-		sdk.setVersionString(sdkType.getVersionString(sdk));
+		SdkImpl sdk = new SdkImpl(name, sdkType, home, "0.0");
+		String versionString = sdkType.getVersionString(sdk);
+		sdk.setVersionString(versionString);
 
 		sdkType.setupSdkPaths(sdk);
 
 		sdkTable.addSdk(sdk);
 
 		executeLogger.info("Sdk [name='" + name + "',  type='" + sdkTypeName + "', home='" + home + "'] added");
+		return versionString;
 	}
 }

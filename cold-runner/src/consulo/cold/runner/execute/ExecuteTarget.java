@@ -3,6 +3,7 @@ package consulo.cold.runner.execute;
 import java.io.File;
 
 import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.UserDataHolder;
 
@@ -13,6 +14,8 @@ import com.intellij.openapi.util.UserDataHolder;
 public interface ExecuteTarget
 {
 	Key<File> WORKING_DIRECTORY = Key.create("working.directory");
+
+	Key<Project> PROJECT = Key.create("project");
 
 	Key<String> PROJECT_NAME = Key.create("project.name");
 
