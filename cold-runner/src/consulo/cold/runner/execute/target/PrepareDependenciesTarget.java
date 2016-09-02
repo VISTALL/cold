@@ -84,7 +84,7 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 					{
 						continue;
 					}
-					String name = libraryElement.getName();
+					String name = libraryElement.getAttributeValue("name");
 
 					if(name != null && name.startsWith(ourLibraryPrefix))
 					{
