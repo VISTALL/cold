@@ -127,7 +127,7 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 
 		try
 		{
-			executeLogger.info("Downloading dependencies");
+			executeLogger.info("Downloading dependencies...");
 			for(String deepDependency : deepDependencies)
 			{
 				String downloadUrl = ourDefaultPluginHost + "download?channel=nightly&platformVersion=" + consuloVersion + "&pluginId=" + URLEncoder.encode(deepDependency, "UTF-8") + "&id=cold";
