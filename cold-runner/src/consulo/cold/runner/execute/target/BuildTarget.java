@@ -134,9 +134,7 @@ public class BuildTarget implements ExecuteTarget
 			setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", consuloHome, null, executeLogger);
 			setupSdk("Consulo Plugin SDK", "Consulo SNAPSHOT", new File(targetConsuloSdk, "Consulo").getPath(), null, executeLogger);
 
-			/*executeIndicator.setText("Cleanup output directories");
-
-			FileUtil.delete(new File(projectDir, "out"));   */
+			PrepareDependenciesTarget.ourInstance.execute(executeLogger, executeContext);
 
 			executeLogger.info("Opening project");
 

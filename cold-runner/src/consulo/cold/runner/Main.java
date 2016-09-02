@@ -8,7 +8,6 @@ import com.intellij.openapi.util.UserDataHolderBase;
 import consulo.cold.runner.execute.ExecuteLogger;
 import consulo.cold.runner.execute.ExecuteTarget;
 import consulo.cold.runner.execute.target.BuildTarget;
-import consulo.cold.runner.execute.target.PrepareDependenciesTarget;
 import consulo.cold.runner.execute.target.PrepareEnvironmentTarget;
 import consulo.cold.runner.util.ColdLoggerFactory;
 
@@ -24,7 +23,6 @@ public class Main
 
 		List<ExecuteTarget> targets = new ArrayList<ExecuteTarget>();
 		targets.add(new PrepareEnvironmentTarget());
-		targets.add(new PrepareDependenciesTarget());
 		targets.add(new BuildTarget());
 
 		ExecuteLogger executeLogger = new ExecuteLogger();
