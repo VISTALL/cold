@@ -71,7 +71,7 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 
 		Set<String> originalDeps = new HashSet<>();
 
-		File librariesDir = new File(depDir, ".consulo/libraries");
+		File librariesDir = new File(workDir, ".consulo/libraries");
 		if(librariesDir.exists())
 		{
 			for(File file : librariesDir.listFiles(x -> x.getName().endsWith(".xml")))
