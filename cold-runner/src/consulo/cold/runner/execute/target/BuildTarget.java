@@ -154,10 +154,6 @@ public class BuildTarget implements ExecuteTarget
 				throw new ExecuteFailedException("'dist' artifact not found");
 			}
 
-			executeContext.putUserData(PROJECT, project);
-
-			PrepareDependenciesTarget.ourInstance.execute(executeLogger, executeContext);
-
 			CompilerClientConnector.getInstance(project).setClientConnection(new CompilerClientInterface()
 			{
 				@Override

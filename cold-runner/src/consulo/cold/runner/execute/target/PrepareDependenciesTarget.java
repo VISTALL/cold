@@ -11,14 +11,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 import com.google.gson.Gson;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTable;
-import com.intellij.openapi.roots.impl.libraries.ProjectLibraryTable;
-import com.intellij.openapi.roots.libraries.Library;
-import com.intellij.openapi.roots.libraries.LibraryTable;
+import com.intellij.openapi.util.JDOMUtil;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.FileUtilRt;
@@ -70,19 +69,34 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 			throw new ExecuteFailedException("Failed to determinate version of Consulo SDK");
 		}
 
-		Project project = executeContext.getUserData(PROJECT);
-
 		Set<String> originalDeps = new HashSet<>();
 
-		LibraryTable libraryTable = ProjectLibraryTable.getInstance(project);
-		for(Library library : libraryTable.getLibraries())
+		File librariesDir = new File(depDir, ".consulo/libraries");
+		if(librariesDir.exists())
 		{
-			String name = library.getName();
-			if(name != null && name.startsWith(ourLibraryPrefix))
+			for(File file : librariesDir.listFiles(x -> x.getName().endsWith(".xml")))
 			{
-				String pluginId = name.substring(ourLibraryPrefix.length(), name.length());
+				try
+				{
+					Element element = JDOMUtil.load(file);
+					Element libraryElement = element.getChild("library");
+					if(libraryElement == null)
+					{
+						continue;
+					}
+					String name = libraryElement.getName();
 
-				originalDeps.add(pluginId);
+					if(name != null && name.startsWith(ourLibraryPrefix))
+					{
+						String pluginId = name.substring(ourLibraryPrefix.length(), name.length());
+
+						originalDeps.add(pluginId);
+					}
+				}
+				catch(JDOMException | IOException e)
+				{
+					throw new ExecuteFailedException(e);
+				}
 			}
 		}
 
