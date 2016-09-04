@@ -115,7 +115,7 @@ public class BuildTarget implements ExecuteTarget
 
 			executeLogger.info("Downloading target platform");
 
-			URL url = new URL("http://must-be.org/jenkins/job/consulo/lastSuccessfulBuild/artifact/out/artifacts/dist/consulo-win.zip");
+			URL url = new URL("http://must-be.org/jenkins/job/consulo/lastSuccessfulBuild/artifact/out/artifacts/all/consulo-win-no-jre.zip");
 
 			File targetPlatformZip = new File(targetConsuloSdk, "target.zip");
 
