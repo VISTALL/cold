@@ -15,8 +15,6 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 import com.google.gson.Gson;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.SdkTable;
 import com.intellij.openapi.util.JDOMUtil;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.io.FileUtil;
@@ -57,18 +55,6 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 			throw new ExecuteFailedException("Can't create directory: " + depDir.getPath());
 		}
 
-		String consuloVersion = null;
-		Sdk sdk = SdkTable.getInstance().findSdk("Consulo SNAPSHOT");
-		if(sdk != null)
-		{
-			consuloVersion = sdk.getVersionString();
-		}
-
-		if(consuloVersion == null)
-		{
-			throw new ExecuteFailedException("Failed to determinate version of Consulo SDK");
-		}
-
 		Set<String> originalDeps = new HashSet<>();
 
 		File librariesDir = new File(workDir, ".consulo/libraries");
@@ -104,7 +90,7 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 		PluginJson[] plugins;
 		try
 		{
-			InputStream inputStream = new URL(ourDefaultPluginHost + "list?channel=nightly&platformVersion=" + consuloVersion).openStream();
+			InputStream inputStream = new URL(ourDefaultPluginHost + "list?channel=nightly&platformVersion=SNAPSHOT").openStream();
 
 			plugins = new Gson().fromJson(new InputStreamReader(inputStream, StandardCharsets.UTF_8), PluginJson[].class);
 		}
@@ -130,7 +116,7 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 			executeLogger.info("Downloading dependencies...");
 			for(String deepDependency : deepDependencies)
 			{
-				String downloadUrl = ourDefaultPluginHost + "download?channel=nightly&platformVersion=" + consuloVersion + "&pluginId=" + URLEncoder.encode(deepDependency, "UTF-8") + "&id=cold";
+				String downloadUrl = ourDefaultPluginHost + "download?channel=nightly&platformVersion=SNAPSHOT&pluginId=" + URLEncoder.encode(deepDependency, "UTF-8") + "&id=cold";
 
 				File targetFileToDownload = FileUtil.createTempFile("download_target", ".zip");
 				File tempTargetFileToDownload = FileUtil.createTempFile("temp_download_target", ".zip");
