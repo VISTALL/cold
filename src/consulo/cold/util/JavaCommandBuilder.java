@@ -22,9 +22,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.text.StringUtil;
@@ -41,7 +44,8 @@ public class JavaCommandBuilder
 	private String vmParameters;
 
 	private Map<String, String> systemProperties = new HashMap<String, String>();
-	private List<String> classPath = new ArrayList<String>();
+	// we need reverse order, move util up to consulo-platform-impl, due classloading issue, duplicate CompressionUtil
+	private Set<String> classPath = new TreeSet<>(Comparator.<String>reverseOrder());
 	private List<String> arguments = new ArrayList<String>();
 
 	public String[] construct()
@@ -83,10 +87,7 @@ public class JavaCommandBuilder
 
 	public void addClassPathEntry(String path)
 	{
-		if(!classPath.contains(path))
-		{
-			classPath.add(path);
-		}
+		classPath.add(path);
 	}
 
 	public void addSystemProperty(String key, String value)
@@ -152,9 +153,9 @@ public class JavaCommandBuilder
 		this.mainClassName = mainClassName;
 	}
 
-	public List<String> getClassPath()
+	public Set<String> getClassPath()
 	{
-		return Collections.unmodifiableList(classPath);
+		return Collections.unmodifiableSet(classPath);
 	}
 
 	public String getVmParameters()
