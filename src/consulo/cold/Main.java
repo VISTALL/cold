@@ -20,14 +20,16 @@ import consulo.cold.util.JavaCommandBuilder;
  */
 public class Main
 {
-	private static final String ourDefaultPluginHost = "http://must-be.org/consulo/plugins/%s";
+	private static final String ourDefaultPluginHost = "http://must-be.org/api/v2/consulo/plugins/";
+
+	private static final String INTERNAL = "consulo.internal.jenkins.helper";
 
 	private static final String[] requiredPluginList = new String[]{
-			"org.consulo.devkit",
+			"consulo.devkit",
+			"consulo.java",
+			"consulo.jflex",
 			"org.intellij.groovy",
 			"org.intellij.intelliLang",
-			"org.consulo.java",
-			"JFlex Support",
 			"com.intellij.junit",
 			"com.intellij.properties",
 			"com.intellij.regexp",
@@ -35,7 +37,7 @@ public class Main
 			"com.intellij.uiDesigner",
 			"com.intellij.xml",
 			// internal plugin
-			"consulo.internal.jenkins.helper"
+			INTERNAL
 	};
 
 	public static void main(String[] args) throws Exception
@@ -54,7 +56,7 @@ public class Main
 
 		System.out.println("Downloading consulo build");
 
-		URL url = new URL("http://must-be.org/vulcan/site/_consulo-distribution/out/consulo-win-no-jre.zip");
+		URL url = new URL("http://must-be.org/jenkins/job/consulo/lastSuccessfulBuild/artifact/out/artifacts/all/consulo-win-no-jre.zip");
 
 		FileUtilRt.copy(url.openStream(), fileOutputStream);
 
@@ -105,6 +107,12 @@ public class Main
 	{
 		URL coldJar = new URL("https://github.com/consulo/cold/raw/master/build/cold-runner.jar");
 
+		String file = System.getProperty("cold.runner.jar");
+		if(file != null)
+		{
+			coldJar = new File(file).toURI().toURL();
+		}
+
 		File coldJarFile = new File(consuloPath, "lib/cold-runner.jar");
 
 		FileOutputStream fileOutputStream = new FileOutputStream(coldJarFile);
@@ -120,17 +128,15 @@ public class Main
 
 	private static void downloadRequiredPlugin(File consuloPath, String pluginId) throws Exception
 	{
-		URL url = null;
-		if(pluginId.equals("com.intellij.uiDesigner"))
+		String channel = "nightly";
+		if(pluginId.equals(INTERNAL))
 		{
-			url = new URL("https://raw.githubusercontent.com/consulo/cold/master/build/ui-designer-patched.zip");
+			channel = "internal";
 		}
-		else
-		{
-			String urlString = String.format(ourDefaultPluginHost, "download?id=") + URLEncoder.encode(pluginId, "UTF8") + "&build=SNAPSHOT&uuid=" + URLEncoder.encode("cold", "UTF8");
 
-			url = new URL(urlString);
-		}
+		String downloadUrl = ourDefaultPluginHost + "download?channel=" + channel + "&platformVersion=SNAPSHOT&pluginId=" + URLEncoder.encode(pluginId, "UTF-8") + "&id=cold";
+
+		URL url = new URL(downloadUrl);
 
 		File tempFile = FileUtilRt.createTempFile(pluginId, "zip", true);
 
