@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import com.google.gson.Gson;
 import com.intellij.openapi.util.JDOMUtil;
 import com.intellij.openapi.util.UserDataHolder;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.util.io.ZipUtil;
 import consulo.cold.runner.execute.ExecuteFailedException;
@@ -118,14 +117,17 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 			{
 				String downloadUrl = ourDefaultPluginHost + "download?channel=nightly&platformVersion=SNAPSHOT&pluginId=" + URLEncoder.encode(deepDependency, "UTF-8") + "&id=cold";
 
-				File targetFileToDownload = FileUtil.createTempFile("download_target", ".zip");
-				File tempTargetFileToDownload = FileUtil.createTempFile("temp_download_target", ".zip");
+				File targetFileToDownload = FileUtilRt.createTempFile("download_target", ".zip");
+				File tempTargetFileToDownload = FileUtilRt.createTempFile("temp_download_target", ".zip");
 
 				executeLogger.info("Downloading plugin: " + deepDependency);
 				DownloadUtil.downloadAtomically(executeLogger, downloadUrl, targetFileToDownload, tempTargetFileToDownload);
 
 				executeLogger.info("Extracting plugin: " + deepDependency);
 				ZipUtil.extract(targetFileToDownload, depDir, null);
+
+				FileUtilRt.delete(targetFileToDownload);
+				FileUtilRt.delete(tempTargetFileToDownload);
 			}
 		}
 		catch(Exception e)

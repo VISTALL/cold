@@ -151,6 +151,8 @@ public class Main
 		System.out.println("Extracting required plugin: " + pluginId);
 
 		ZipUtil.extract(tempFile, new File(consuloPath, "plugins"), null);
+
+		FileUtilRt.delete(tempFile);
 	}
 
 	private static int start(String javaHome, String consuloPath, String workingDirectory) throws Exception
