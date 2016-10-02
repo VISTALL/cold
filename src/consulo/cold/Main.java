@@ -50,7 +50,7 @@ public class Main
 
 		FileUtilRt.createDirectory(tempDirectory);
 
-		File consuloBuildFile = FileUtilRt.createTempFile("consulo", "zip", true);
+		File consuloBuildFile = FileUtilRt.createTempFile("consulo", "zip");
 
 		FileOutputStream fileOutputStream = new FileOutputStream(consuloBuildFile);
 
@@ -65,6 +65,8 @@ public class Main
 		System.out.println("Extracting consulo build");
 
 		ZipUtil.extract(consuloBuildFile, tempDirectory, null);
+
+		FileUtilRt.delete(consuloBuildFile);
 
 		String javaHome = System.getProperty("java.home");
 
@@ -138,7 +140,7 @@ public class Main
 
 		URL url = new URL(downloadUrl);
 
-		File tempFile = FileUtilRt.createTempFile(pluginId, "zip", true);
+		File tempFile = File.createTempFile(pluginId, "zip");
 
 		FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
 

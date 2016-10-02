@@ -117,8 +117,8 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 			{
 				String downloadUrl = ourDefaultPluginHost + "download?channel=nightly&platformVersion=SNAPSHOT&pluginId=" + URLEncoder.encode(deepDependency, "UTF-8") + "&id=cold";
 
-				File targetFileToDownload = FileUtilRt.createTempFile("download_target", ".zip");
-				File tempTargetFileToDownload = FileUtilRt.createTempFile("temp_download_target", ".zip");
+				File targetFileToDownload = File.createTempFile("download_target", ".zip");
+				File tempTargetFileToDownload = File.createTempFile("temp_download_target", ".zip");
 
 				executeLogger.info("Downloading plugin: " + deepDependency);
 				DownloadUtil.downloadAtomically(executeLogger, downloadUrl, targetFileToDownload, tempTargetFileToDownload);
