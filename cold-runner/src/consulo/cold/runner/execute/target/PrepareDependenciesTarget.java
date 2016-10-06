@@ -33,7 +33,7 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 	protected static final PrepareDependenciesTarget ourInstance = new PrepareDependenciesTarget();
 
 	private static final String ourLibraryPrefix = "consulo-plugin: ";
-	private static final String ourDefaultPluginHost = "http://must-be.org/api/v2/consulo/plugins/";
+	private static final String ourDefaultPluginHost = "https://hub.consulo.io/api/plugins/";
 
 	@Override
 	public void execute(@NotNull ExecuteLogger executeLogger, @NotNull UserDataHolder executeContext) throws ExecuteFailedException

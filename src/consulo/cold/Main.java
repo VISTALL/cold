@@ -20,7 +20,7 @@ import consulo.cold.util.JavaCommandBuilder;
  */
 public class Main
 {
-	private static final String ourDefaultPluginHost = "http://must-be.org/api/v2/consulo/plugins/";
+	private static final String ourDefaultPluginHost = "https://hub.consulo.io/api/plugins/";
 
 	private static final String INTERNAL = "consulo.internal.jenkins.helper";
 
@@ -56,7 +56,7 @@ public class Main
 
 		System.out.println("Downloading consulo build");
 
-		URL url = new URL("http://must-be.org/jenkins/job/consulo/lastSuccessfulBuild/artifact/out/artifacts/all/consulo-win-no-jre.zip");
+		URL url = new URL("https://ci.consulo.io/job/consulo/lastSuccessfulBuild/artifact/out/artifacts/all/consulo-win-no-jre.zip");
 
 		FileUtilRt.copy(url.openStream(), fileOutputStream);
 
