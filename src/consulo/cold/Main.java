@@ -56,7 +56,7 @@ public class Main
 
 		System.out.println("Downloading consulo build");
 
-		URL url = new URL("https://ci.consulo.io/job/consulo/lastSuccessfulBuild/artifact/out/artifacts/all/consulo-win-no-jre.zip");
+		URL url = new URL("https://ci.consulo.io/job/consulo/1470/artifact/out/artifacts/all/consulo-win-no-jre.zip");
 
 		FileUtilRt.copy(url.openStream(), fileOutputStream);
 
@@ -136,7 +136,8 @@ public class Main
 			channel = "internal";
 		}
 
-		String downloadUrl = ourDefaultPluginHost + "download?channel=" + channel + "&platformVersion=SNAPSHOT&pluginId=" + URLEncoder.encode(pluginId, "UTF-8") + "&id=cold";
+		String platformVersion = "1470"; //"SNAPSHOT";
+		String downloadUrl = ourDefaultPluginHost + "download?channel=" + channel + "&platformVersion=" + platformVersion + "&pluginId=" + URLEncoder.encode(pluginId, "UTF-8") + "&id=cold";
 
 		URL url = new URL(downloadUrl);
 
