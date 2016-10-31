@@ -40,7 +40,9 @@ import com.intellij.packaging.impl.compiler.ArtifactCompileScope;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.PsiManagerEx;
 import com.intellij.psi.impl.file.impl.FileManagerImpl;
+import com.intellij.util.ArrayUtil;
 import com.intellij.util.concurrency.Semaphore;
+import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.io.ZipUtil;
 import consulo.cold.runner.execute.ExecuteFailedException;
 import consulo.cold.runner.execute.ExecuteLogger;
@@ -132,7 +134,7 @@ public class BuildTarget implements ExecuteTarget
 			setupSdk("JDK", "1.8", jdk6Home, alreadyAdded, executeLogger);
 
 			setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", consuloHome, null, executeLogger);
-			setupSdk("Consulo Plugin SDK", "Consulo SNAPSHOT", new File(targetConsuloSdk, "Consulo").getPath(), null, executeLogger);
+			setupSdk("Consulo Plugin SDK", "Consulo SNAPSHOT", selectBuild(new File(targetConsuloSdk, "Consulo").getPath()), null, executeLogger);
 
 			PrepareDependenciesTarget.ourInstance.execute(executeLogger, executeContext);
 
@@ -226,6 +228,26 @@ public class BuildTarget implements ExecuteTarget
 		{
 			throw new ExecuteFailedException(e);
 		}
+	}
+
+	@Nullable
+	public static String selectBuild(@NotNull String sdkHome)
+	{
+		File platformDirectory = new File(sdkHome, "platform");
+		if(!platformDirectory.exists())
+		{
+			return sdkHome;
+		}
+
+		String[] child = platformDirectory.list();
+		if(child.length == 0)
+		{
+			return sdkHome;
+		}
+
+		ContainerUtil.sort(child);
+
+		return new File(platformDirectory, ArrayUtil.getLastElement(child)).getPath();
 	}
 
 	@SuppressWarnings("RequiredXAction")
