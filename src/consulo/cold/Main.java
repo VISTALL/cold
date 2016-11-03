@@ -1,12 +1,18 @@
 package consulo.cold;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.Set;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.openapi.util.text.StringUtil;
@@ -49,7 +55,7 @@ public class Main
 
 		FileUtilRt.createDirectory(tempDirectory);
 
-		File consuloBuildFile = FileUtilRt.createTempFile("consulo", "zip");
+		File consuloBuildFile = FileUtilRt.createTempFile("consulo", "tar.gz");
 
 		FileOutputStream fileOutputStream = new FileOutputStream(consuloBuildFile);
 
@@ -63,7 +69,7 @@ public class Main
 
 		System.out.println("Extracting consulo build");
 
-		ZipUtil.extract(consuloBuildFile, tempDirectory, null);
+		extract(consuloBuildFile, tempDirectory);
 
 		FileUtilRt.delete(consuloBuildFile);
 
@@ -102,6 +108,32 @@ public class Main
 		FileUtilRt.delete(tempDirectory);
 
 		System.exit(exitValue);
+	}
+
+	public static void extract(File tarFile, File directory) throws IOException
+	{
+		try (TarArchiveInputStream in = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(tarFile))))
+		{
+			ArchiveEntry entry = in.getNextEntry();
+			while(entry != null)
+			{
+				if(entry.isDirectory())
+				{
+					entry = in.getNextEntry();
+					continue;
+				}
+				File curfile = new File(directory, entry.getName());
+				File parent = curfile.getParentFile();
+				if(!parent.exists())
+				{
+					parent.mkdirs();
+				}
+				OutputStream out = new FileOutputStream(curfile);
+				IOUtils.copy(in, out);
+				out.close();
+				entry = in.getNextEntry();
+			}
+		}
 	}
 
 	private static void downloadColdRunner(File consuloPath) throws Exception
