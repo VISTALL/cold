@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Set;
 
 import com.intellij.openapi.diagnostic.Logger;
@@ -56,7 +55,7 @@ public class Main
 
 		System.out.println("Downloading consulo build");
 
-		URL url = new URL("https://ci.consulo.io/job/consulo/1490/artifact/out/artifacts/all/consulo-win-no-jre.zip");
+		URL url = new URL(buildUrl("nightly", "consulo-win-no-jre"));
 
 		FileUtilRt.copy(url.openStream(), fileOutputStream);
 
@@ -136,8 +135,7 @@ public class Main
 			channel = "internal";
 		}
 
-		String platformVersion = "1490"; //"SNAPSHOT";
-		String downloadUrl = ourDefaultPluginHost + "download?channel=" + channel + "&platformVersion=" + platformVersion + "&pluginId=" + URLEncoder.encode(pluginId, "UTF-8") + "&id=cold";
+		String downloadUrl = buildUrl(channel, pluginId);
 
 		URL url = new URL(downloadUrl);
 
@@ -156,6 +154,12 @@ public class Main
 		ZipUtil.extract(tempFile, new File(consuloPath, "plugins"), null);
 
 		FileUtilRt.delete(tempFile);
+	}
+
+	private static String buildUrl(String channel, String pluginId)
+	{
+		String platformVersion = "1470";
+		return ourDefaultPluginHost + "download?channel=" + channel + "&platformVersion=" + platformVersion + "&pluginId=" + pluginId + "&id=cold";
 	}
 
 	private static int start(String javaHome, String consuloPath, String workingDirectory) throws Exception
