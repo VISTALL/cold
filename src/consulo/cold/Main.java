@@ -45,6 +45,8 @@ public class Main
 			INTERNAL
 	};
 
+	private static final String ourConsuloBootBuild = "1491";
+
 	public static void main(String[] args) throws Exception
 	{
 		Logger.setFactory(ColdLoggerFactory.class);
@@ -146,7 +148,7 @@ public class Main
 			coldJar = new File(file).toURI().toURL();
 		}
 
-		File coldJarFile = new File(consuloPath, "lib/cold-runner.jar");
+		File coldJarFile = new File(consuloPath, "platform/build" + ourConsuloBootBuild + "/lib/cold-runner.jar");
 
 		FileOutputStream fileOutputStream = new FileOutputStream(coldJarFile);
 
@@ -190,8 +192,7 @@ public class Main
 
 	private static String buildUrl(String channel, String pluginId)
 	{
-		String platformVersion = "1470";
-		return ourDefaultPluginHost + "download?channel=" + channel + "&platformVersion=" + platformVersion + "&pluginId=" + pluginId + "&id=cold";
+		return ourDefaultPluginHost + "download?channel=" + channel + "&platformVersion=" + ourConsuloBootBuild + "&pluginId=" + pluginId + "&id=cold&platformBuildSelect=true";
 	}
 
 	private static int start(String javaHome, String consuloPath, String workingDirectory) throws Exception
@@ -200,7 +201,8 @@ public class Main
 		javaCommandBuilder.setMainClassName("consulo.cold.runner.Main");
 		javaCommandBuilder.setJavaHome(javaHome);
 
-		File libDir = new File(consuloPath, "lib");
+		File home = new File(consuloPath, "platform/build" + ourConsuloBootBuild);
+		File libDir = new File(home, "lib");
 		for(File file : libDir.listFiles())
 		{
 			javaCommandBuilder.addClassPathEntry(file.getAbsolutePath());
@@ -217,7 +219,7 @@ public class Main
 		}
 
 		javaCommandBuilder.addSystemProperty("jdk6.home", javaHome);
-		javaCommandBuilder.addSystemProperty("consulo.home", consuloPath);
+		javaCommandBuilder.addSystemProperty("consulo.home", home.getPath());
 
 		return execute(javaCommandBuilder.construct(), workingDirectory);
 	}
