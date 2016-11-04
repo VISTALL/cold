@@ -107,7 +107,7 @@ public class Main
 
 		int exitValue = start(javaHome, consuloPath.getPath(), tempDirectory.getParentFile().getAbsolutePath());
 
-		FileUtilRt.delete(tempDirectory);
+		///FileUtilRt.delete(tempDirectory);
 
 		System.exit(exitValue);
 	}
@@ -185,7 +185,7 @@ public class Main
 
 		System.out.println("Extracting required plugin: " + pluginId);
 
-		ZipUtil.extract(tempFile, new File(consuloPath, "plugins"), null);
+		ZipUtil.extract(tempFile, new File(consuloPath, "platform/build" + ourConsuloBootBuild + "/plugins"), null);
 
 		FileUtilRt.delete(tempFile);
 	}
@@ -198,6 +198,7 @@ public class Main
 	private static int start(String javaHome, String consuloPath, String workingDirectory) throws Exception
 	{
 		JavaCommandBuilder javaCommandBuilder = new JavaCommandBuilder();
+		//javaCommandBuilder.addVmArgument("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005");
 		javaCommandBuilder.setMainClassName("consulo.cold.runner.Main");
 		javaCommandBuilder.setJavaHome(javaHome);
 
@@ -219,7 +220,7 @@ public class Main
 		}
 
 		javaCommandBuilder.addSystemProperty("jdk6.home", javaHome);
-		javaCommandBuilder.addSystemProperty("consulo.home", home.getPath());
+		javaCommandBuilder.addSystemProperty("consulo.home", consuloPath);
 
 		return execute(javaCommandBuilder.construct(), workingDirectory);
 	}

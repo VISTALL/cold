@@ -41,11 +41,11 @@ public class JavaCommandBuilder
 
 	private String javaExecutablePath;
 	private String mainClassName;
-	private String vmParameters;
 
 	private Map<String, String> systemProperties = new HashMap<String, String>();
 	// we need reverse order, move util up to consulo-platform-impl, due classloading issue, duplicate CompressionUtil
 	private Set<String> classPath = new TreeSet<>(Comparator.<String>reverseOrder());
+	private Set<String> vmArguments = new TreeSet<>();
 	private List<String> arguments = new ArrayList<String>();
 
 	public String[] construct()
@@ -54,10 +54,7 @@ public class JavaCommandBuilder
 
 		args.add(javaExecutablePath);
 
-		if(vmParameters != null)
-		{
-			Collections.addAll(args, vmParameters.split(" "));
-		}
+		args.addAll(vmArguments);
 
 		if(!classPath.isEmpty())
 		{
@@ -102,6 +99,11 @@ public class JavaCommandBuilder
 	public void addArgument(String arg)
 	{
 		arguments.add(arg);
+	}
+
+	public void addVmArgument(String arg)
+	{
+		vmArguments.add(arg);
 	}
 
 	public String getJavaExecutablePath()
@@ -158,13 +160,8 @@ public class JavaCommandBuilder
 		return Collections.unmodifiableSet(classPath);
 	}
 
-	public String getVmParameters()
+	public Set<String> getVmArguments()
 	{
-		return vmParameters;
-	}
-
-	public void setVmParameters(String vmParameters)
-	{
-		this.vmParameters = vmParameters;
+		return vmArguments;
 	}
 }

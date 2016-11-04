@@ -78,9 +78,15 @@ public class BuildTarget implements ExecuteTarget
 			final File tempDataDir = new File(new File(projectDir, ".cold"), "ConsuloData");
 			FileUtilRt.createDirectory(tempDataDir);
 
+			String build = selectBuild(consuloHome);
+			if(build == null)
+			{
+				throw new ExecuteFailedException("build is not selected");
+			}
+
 			System.setProperty(PathManager.PROPERTY_CONFIG_PATH, tempDataDir.getAbsolutePath() + "/config");
 			System.setProperty(PathManager.PROPERTY_SYSTEM_PATH, tempDataDir.getAbsolutePath() + "/system");
-			System.setProperty(PathManager.PROPERTY_HOME_PATH, consuloHome);
+			System.setProperty(PathManager.PROPERTY_HOME_PATH, selectBuild(consuloHome));
 			System.setProperty("idea.filewatcher.disabled", "true");
 			// it already set via parent process System.setProperty("cold.build.number", "1");
 
@@ -133,8 +139,8 @@ public class BuildTarget implements ExecuteTarget
 			setupSdk("JDK", "1.6", jdk6Home, alreadyAdded, executeLogger);
 			setupSdk("JDK", "1.8", jdk6Home, alreadyAdded, executeLogger);
 
-			setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", consuloHome, null, executeLogger);
-			setupSdk("Consulo Plugin SDK", "Consulo SNAPSHOT", selectBuild(new File(targetConsuloSdk, "Consulo").getPath()), null, executeLogger);
+			//setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", consuloHome, null, executeLogger);
+			setupSdk("Consulo Plugin SDK", "Consulo SNAPSHOT", new File(targetConsuloSdk, "Consulo").getPath(), null, executeLogger);
 
 			PrepareDependenciesTarget.ourInstance.execute(executeLogger, executeContext);
 
