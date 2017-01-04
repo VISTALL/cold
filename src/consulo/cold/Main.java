@@ -25,7 +25,7 @@ import consulo.cold.util.JavaCommandBuilder;
  */
 public class Main
 {
-	private static final String ourDefaultPluginHost = "https://hub.consulo.io/api/plugins/";
+	private static final String ourDefaultPluginHost = "https://hub.consulo.io/api/repository/";
 
 	private static final String INTERNAL = "consulo.internal.jenkins.helper";
 
@@ -192,7 +192,7 @@ public class Main
 
 	private static String buildUrl(String channel, String pluginId)
 	{
-		return ourDefaultPluginHost + "download?channel=" + channel + "&platformVersion=" + ourConsuloBootBuild + "&pluginId=" + pluginId + "&id=cold&platformBuildSelect=true";
+		return ourDefaultPluginHost + "download?channel=" + channel + "&platformVersion=" + ourConsuloBootBuild + "&pluginId=" + pluginId + "&platformBuildSelect=true&noTracking=true";
 	}
 
 	private static int start(String javaHome, String consuloPath, String workingDirectory) throws Exception

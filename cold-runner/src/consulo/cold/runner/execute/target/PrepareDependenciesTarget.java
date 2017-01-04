@@ -33,7 +33,7 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 	protected static final PrepareDependenciesTarget ourInstance = new PrepareDependenciesTarget();
 
 	private static final String ourLibraryPrefix = "consulo-plugin: ";
-	private static final String ourDefaultPluginHost = "https://hub.consulo.io/api/plugins/";
+	private static final String ourDefaultPluginHost = "https://hub.consulo.io/api/repository/";
 
 	@Override
 	public void execute(@NotNull ExecuteLogger executeLogger, @NotNull UserDataHolder executeContext) throws ExecuteFailedException
@@ -89,7 +89,7 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 		PluginJson[] plugins;
 		try
 		{
-			InputStream inputStream = new URL(ourDefaultPluginHost + "list?channel=nightly&platformVersion=SNAPSHOT").openStream();
+			InputStream inputStream = new URL(ourDefaultPluginHost + "list?channel=nightly&platformVersion=SNAPSHOT&noTracking=true").openStream();
 
 			plugins = new Gson().fromJson(new InputStreamReader(inputStream, StandardCharsets.UTF_8), PluginJson[].class);
 		}
@@ -115,7 +115,7 @@ public class PrepareDependenciesTarget implements ExecuteTarget
 			executeLogger.info("Downloading dependencies...");
 			for(String deepDependency : deepDependencies)
 			{
-				String downloadUrl = ourDefaultPluginHost + "download?channel=nightly&platformVersion=SNAPSHOT&pluginId=" + URLEncoder.encode(deepDependency, "UTF-8") + "&id=cold";
+				String downloadUrl = ourDefaultPluginHost + "download?channel=nightly&platformVersion=SNAPSHOT&pluginId=" + URLEncoder.encode(deepDependency, "UTF-8") + "&noTracking=true";
 
 				File targetFileToDownload = File.createTempFile("download_target", ".zip");
 				File tempTargetFileToDownload = File.createTempFile("temp_download_target", ".zip");
