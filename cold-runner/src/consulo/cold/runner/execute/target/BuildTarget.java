@@ -123,7 +123,7 @@ public class BuildTarget implements ExecuteTarget
 
 			executeLogger.info("Downloading target platform");
 
-			URL url = new URL("https://hub.consulo.io/api/repository/download?channel=nightly&platformVersion=SNAPSHOT&pluginId=consulo-win-no-jre&zip=true");
+			URL url = new URL(PrepareDependenciesTarget.ourDefaultPluginHost + "download?channel=nightly&platformVersion=SNAPSHOT&pluginId=consulo-win-no-jre&zip=true&noTracking=true");
 
 			File targetPlatformZip = new File(targetConsuloSdk, "target.zip");
 
