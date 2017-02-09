@@ -16,5 +16,7 @@ public interface ExecuteTarget
 
 	Key<String> PROJECT_NAME = Key.create("project.name");
 
+	Key<String> BUILD_NUMBER = Key.create("build.number");
+
 	void execute(@NotNull ExecuteLogger executeLogger, @NotNull UserDataHolder executeContext) throws ExecuteFailedException;
 }

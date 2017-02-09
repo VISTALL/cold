@@ -24,4 +24,20 @@ public class ExecuteLogger
 		System.out.println(message);
 		e.printStackTrace();
 	}
+
+	public void error(@NotNull String message)
+	{
+		System.err.println(message);
+	}
+
+	public void error(@NotNull Exception e)
+	{
+		error(e.getMessage(), e);
+	}
+
+	public void error(@NotNull String message, @Nullable Exception e)
+	{
+		System.err.println(message);
+		e.printStackTrace();
+	}
 }

@@ -105,9 +105,9 @@ public class Main
 			downloadRequiredPlugin(consuloPath, pluginId);
 		}
 
-		int exitValue = start(javaHome, consuloPath.getPath(), tempDirectory.getParentFile().getAbsolutePath());
+		int exitValue = start(javaHome, consuloPath.getPath(), tempDirectory.getParentFile().getAbsolutePath(), args);
 
-		///FileUtilRt.delete(tempDirectory);
+		FileUtilRt.delete(tempDirectory);
 
 		System.exit(exitValue);
 	}
@@ -195,12 +195,16 @@ public class Main
 		return ourDefaultPluginHost + "download?channel=" + channel + "&platformVersion=" + ourConsuloBootBuild + "&pluginId=" + pluginId + "&platformBuildSelect=true&noTracking=true";
 	}
 
-	private static int start(String javaHome, String consuloPath, String workingDirectory) throws Exception
+	private static int start(String javaHome, String consuloPath, String workingDirectory, String[] args) throws Exception
 	{
 		JavaCommandBuilder javaCommandBuilder = new JavaCommandBuilder();
 		//javaCommandBuilder.addVmArgument("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005");
 		javaCommandBuilder.setMainClassName("consulo.cold.runner.Main");
 		javaCommandBuilder.setJavaHome(javaHome);
+		for(String arg : args)
+		{
+			javaCommandBuilder.addArgument(arg);
+		}
 
 		File home = new File(consuloPath, "platform/build" + ourConsuloBootBuild);
 		File libDir = new File(home, "lib");
