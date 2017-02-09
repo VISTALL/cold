@@ -112,7 +112,7 @@ public class BuildPluginArtifactsTarget implements ExecuteTarget
 				File zipFile = new File(distPath, pluginInfo.getKey() + "_" + executeContext.getUserData(ExecuteTarget.BUILD_NUMBER) + ".zip");
 				try(ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile)))
 				{
-					ZipUtil.addDirToZipRecursively(zipOutputStream, null, pluginPath, "", null, null);
+					ZipUtil.addDirToZipRecursively(zipOutputStream, null, pluginPath, pluginInfo.getKey(), null, null);
 				}
 			}
 		}
