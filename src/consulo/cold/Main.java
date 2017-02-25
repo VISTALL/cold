@@ -45,7 +45,7 @@ public class Main
 			INTERNAL
 	};
 
-	private static final String ourConsuloBootBuild = "1550";
+	private static final String ourConsuloBootBuild = "1552";
 
 	public static void main(String[] args) throws Exception
 	{
