@@ -136,7 +136,7 @@ public class BuildTarget implements ExecuteTarget
 
 			ZipUtil.extract(targetPlatformZip, targetConsuloSdk, null);
 
-			setupSdk("JDK", "1.6", jdk6Home, alreadyAdded, executeLogger);
+			//setupSdk("JDK", "1.6", jdk6Home, alreadyAdded, executeLogger);
 			setupSdk("JDK", "1.8", jdk6Home, alreadyAdded, executeLogger);
 
 			//setupSdk("Consulo Plugin SDK", "Consulo 1.SNAPSHOT", consuloHome, null, executeLogger);
