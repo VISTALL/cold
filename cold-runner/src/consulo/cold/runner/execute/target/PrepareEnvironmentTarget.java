@@ -33,7 +33,9 @@ public class PrepareEnvironmentTarget implements ExecuteTarget
 
 		try
 		{
-			String name = FileUtil.loadFile(new File(consuloDir, ".name"), CharsetToolkit.UTF8);
+			File nameFile = new File(consuloDir, ".name");
+
+			String name = nameFile.exists() ? FileUtil.loadFile(nameFile, CharsetToolkit.UTF8) : parentFile.getName();
 
 			executeContext.putUserData(WORKING_DIRECTORY, parentFile);
 			executeContext.putUserData(PROJECT_NAME, name);
