@@ -20,6 +20,7 @@ import com.intellij.openapi.compiler.CompileStatusNotification;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.compiler.CompilerMessageCategory;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ex.ProjectEx;
 import com.intellij.openapi.project.ex.ProjectManagerEx;
 import com.intellij.openapi.project.impl.ProjectManagerImpl;
 import com.intellij.openapi.projectRoots.Sdk;
@@ -149,6 +150,12 @@ public class BuildTarget implements ExecuteTarget
 			final Project project = ProjectManagerEx.getInstanceEx().loadProject(projectDir.getPath());
 
 			assert project != null;
+
+			String name = executeContext.getUserData(PROJECT_NAME);
+			if(name != null)
+			{
+				((ProjectEx) project).setProjectName(name);
+			}
 
 			((ProjectManagerImpl) ProjectManagerEx.getInstance()).fireProjectOpened(project);
 

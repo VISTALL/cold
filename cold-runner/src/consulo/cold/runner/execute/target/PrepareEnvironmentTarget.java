@@ -38,7 +38,7 @@ public class PrepareEnvironmentTarget implements ExecuteTarget
 			String name = nameFile.exists() ? FileUtil.loadFile(nameFile, CharsetToolkit.UTF8) : parentFile.getCanonicalFile().getName();
 
 			executeLogger.info("Project name: " + name);
-			
+
 			executeContext.putUserData(WORKING_DIRECTORY, parentFile);
 			executeContext.putUserData(PROJECT_NAME, name);
 		}
